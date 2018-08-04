@@ -24,8 +24,6 @@ namespace ServerApp
                 });
 
             await hostBuilder.RunConsoleAsync();
-            
-            await Console.Out.WriteLineAsync("Done.");
         }
     }
 }
