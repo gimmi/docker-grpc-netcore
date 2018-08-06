@@ -1,13 +1,13 @@
 ### Build App
 
 ```
-dotnet publish .\src\ServerApp.sln --configuration Release
+dotnet publish .\src\MyCompany.MyStack.sln --configuration Release
 ```
 
 ### Run locally
 
 ```
-dotnet .\src\ServerApp\bin\Release\netcoreapp2.1\publish\ServerApp.dll p1 p2 p3
+dotnet .\src\MyCompany.MyStack.ServerApp\bin\Release\netcoreapp2.1\publish\MyCompany.MyStack.ServerApp.dll p1 p2 p3
 ```
 
 ### Build Docker Image
@@ -24,4 +24,10 @@ docker logs serverapp
 docker stop serverapp
 docker logs serverapp
 docker container rm serverapp
+```
+
+### Remove image
+
+```
+docker image rm serverapp
 ```

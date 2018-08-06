@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace ServerApp
+namespace MyCompany.MyStack.ServerApp
 {
     public class MyHostedService : IHostedService
     {
