@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Grpc.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Mycompany.Mystack;
 
-namespace MyCompany.MyStack.ServerApp
+namespace MyCompany.MyStack.ClientApp
 {
     public static class Program
     {
@@ -20,8 +22,12 @@ namespace MyCompany.MyStack.ServerApp
                     logging.AddConsole();
                 })
                 .ConfigureServices(services => {
-                    services.AddSingleton<MyStackServerImpl>();
-                    services.AddSingleton<IHostedService, GrpcHostedService>();
+                    
+                    services.AddSingleton(sp => {
+                        var channel = new Channel("localhost", 50052, ChannelCredentials.Insecure);
+                        return new MyStackServer.MyStackServerClient(channel);
+                    });
+                    services.AddSingleton<IHostedService, ClientHostedService>();
                 });
 
             await hostBuilder.RunConsoleAsync();

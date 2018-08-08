@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package mycompany.mystack;
 
-service EchoService {
+service MyStackServer {
     rpc Echo(EchoRequest) returns (EchoResponse);
 }
 

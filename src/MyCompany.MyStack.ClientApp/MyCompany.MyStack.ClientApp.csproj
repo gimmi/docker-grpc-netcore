@@ -12,6 +12,11 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Grpc.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d754f35622e28bad">
+      <HintPath>..\..\..\..\.nuget\packages\grpc.core\1.14.0\lib\netstandard1.5\Grpc.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\..\protos\MycompanyMystack.cs">
       <Link>MycompanyMystack.cs</Link>
     </Compile>
