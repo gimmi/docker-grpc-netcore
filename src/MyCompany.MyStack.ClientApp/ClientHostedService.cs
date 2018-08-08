@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Grpc.Core;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Mycompany.Mystack;
@@ -47,10 +48,20 @@ namespace MyCompany.MyStack.ClientApp
             {
                 try 
                 {
-                    var response = await _myStackServerClient.EchoAsync(new EchoRequest {Message = $"MSG #{++counter}"});
+                    var request = new EchoRequest {Message = $"msg #{++counter}"};
+                    var response = await _myStackServerClient.EchoAsync(request);
 
-                    await Console.Out.WriteLineAsync(response.Message);
+                    await Console.Out.WriteLineAsync($"Echo({request.Message}) => {response.Message}");
 
+                    try 
+                    {
+                        await _myStackServerClient.FailAsync(new FailRequest { Message = "AHHHH" });
+                    }
+                    catch (RpcException ex) 
+                    {
+                        await Console.Out.WriteLineAsync(ex.ToString());
+                    }
+                    
                     await WaitAsync(TimeSpan.FromSeconds(3), cancellationToken);
                 }
                 catch (Exception ex)

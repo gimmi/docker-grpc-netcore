@@ -33,6 +33,7 @@ foreach ($ProtoFile in $ProtoFiles) {
         "--proto_path=$ProtoDir",
         "--csharp_out=$ProtoDir",
         "--plugin=protoc-gen-grpc=$GrpcPluginApp",
+        # Some additional params can be specified, see https://groups.google.com/d/msg/grpc-io/rM6q0WYXp-w/Qy5R91g7DwAJ
         "--grpc_out=$ProtoDir",
         $ProtoFile
     )
