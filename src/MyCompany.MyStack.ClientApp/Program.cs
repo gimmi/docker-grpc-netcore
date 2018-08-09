@@ -18,7 +18,8 @@ namespace MyCompany.MyStack.ClientApp
                 .ConfigureLogging(logging => {
                     // See https://msdn.microsoft.com/en-us/magazine/mt694089.aspx
 
-                    logging.SetMinimumLevel(LogLevel.Trace);
+                    logging.SetMinimumLevel(LogLevel.Warning);
+                    logging.AddFilter(typeof(Program).Namespace, LogLevel.Trace);
                     logging.AddConsole();
                 })
                 .ConfigureServices(services => {
