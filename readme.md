@@ -9,21 +9,22 @@ dotnet publish .\src\MyCompany.MyStack.sln --configuration Release
 
 ```
 dotnet .\src\MyCompany.MyStack.ServerApp\bin\Release\netcoreapp2.1\publish\MyCompany.MyStack.ServerApp.dll p1 p2 p3
+dotnet .\src\MyCompany.MyStack.ClientApp\bin\Release\netcoreapp2.1\publish\MyCompany.MyStack.ClientApp.dll p1 p2 p3
 ```
 
 ### Build Docker Image
 
 ```
-docker build -t serverapp .
+docker build --tag serverapp .\src\MyCompany.MyStack.ServerApp
 ```
 
 ### Run Container in background
 
 ```
-docker run --name serverapp --detach serverapp par1 par2 "par 3"
-docker logs serverapp
+docker run --name serverapp --publish 50052:50052 --detach serverapp par1 par2 "par 3"
+docker logs --follow serverapp
 docker stop serverapp
-docker logs serverapp
+docker logs --tail 20 serverapp
 docker container rm serverapp
 ```
 

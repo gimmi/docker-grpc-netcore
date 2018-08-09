@@ -10,8 +10,12 @@ namespace MyCompany.MyStack.ServerApp
 {
     public class GrpcHostedService : IHostedService
     {
+        private const string Host = "0.0.0.0";
+        private const int Port = 50052;
+
         private readonly MyStackServerImpl _myStackServerImpl;
         private readonly ILogger<GrpcHostedService> _logger;
+
         private Server _server;
 
         public GrpcHostedService(MyStackServerImpl myStackServerImpl, ILogger<GrpcHostedService> logger)
@@ -22,14 +26,12 @@ namespace MyCompany.MyStack.ServerApp
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            const int port = 50052;
-
-            _logger.LogInformation("Starting Grpc server on port {}", port);
+            _logger.LogInformation("Starting Grpc server on {}:{}", Host, Port);
             GrpcEnvironment.SetLogger(new LogLevelFilterLogger(new ConsoleLogger(), Grpc.Core.Logging.LogLevel.Debug));
             
             _server = new Server {
                 Services = { MyStackServer.BindService(_myStackServerImpl) },
-                Ports = { new ServerPort("localhost", port, ServerCredentials.Insecure) }
+                Ports = { new ServerPort(Host, Port, ServerCredentials.Insecure) }
             };
             _server.Start();
 
