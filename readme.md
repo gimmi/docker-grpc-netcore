@@ -1,6 +1,7 @@
 ### Build App
 
 ```
+.\protos\generate.ps1
 dotnet publish .\src\MyCompany.MyStack.sln --configuration Release
 ```
 
