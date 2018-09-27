@@ -26,7 +26,7 @@ namespace MyCompany.MyStack.ClientApp
             _logger.LogInformation("Starting");
             
             _cancellationTokenSource = new CancellationTokenSource();
-            
+
             _task = Task.Run(() => WorkerAsync(_cancellationTokenSource.Token), cancellationToken);
             
             return Task.CompletedTask;
@@ -53,15 +53,22 @@ namespace MyCompany.MyStack.ClientApp
 
                     await Console.Out.WriteLineAsync($"Echo({request.Message}) => {response.Message}");
 
-                    try 
+                    try
                     {
                         await _myStackServerClient.FailAsync(new FailRequest { Message = "AHHHH" });
                     }
-                    catch (RpcException ex) 
+                    catch (RpcException ex)
                     {
                         await Console.Out.WriteLineAsync(ex.ToString());
                     }
-                    
+
+                    var responseStream = _myStackServerClient.ServerStream(new ServerStreamRequest { Message = "Please start stream" }).ResponseStream;
+                    while (await responseStream.MoveNext(cancellationToken))
+                    {
+                        await Console.Out.WriteLineAsync(responseStream.Current.Message);
+                        await Task.Delay(3000, cancellationToken);
+                    }
+
                     await WaitAsync(TimeSpan.FromSeconds(3), cancellationToken);
                 }
                 catch (Exception ex)

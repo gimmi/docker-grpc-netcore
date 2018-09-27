@@ -5,6 +5,7 @@ package mycompany.mystack;
 service MyStackServer {
     rpc Echo(EchoRequest) returns (EchoResponse);
     rpc Fail(FailRequest) returns (FailResponse);
+    rpc ServerStream(ServerStreamRequest) returns (stream ServerStreamResponse);
 }
 
 message EchoRequest {
@@ -21,4 +22,13 @@ message FailRequest {
 
 message FailResponse {
     string message = 1;
+}
+
+message ServerStreamRequest {
+    string message = 1;
+}
+
+message ServerStreamResponse {
+    string message = 1;
+    bytes payload = 2;
 }
