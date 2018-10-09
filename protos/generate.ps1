@@ -18,7 +18,7 @@ function Install-NuGetTool($Id, $Version) {
     return "$OutputDirectory\$Id.$Version"
 }
 
-$GrpcTools = Install-NuGetTool -Id "Grpc.Tools" -Version "1.14.0"
+$GrpcTools = Install-NuGetTool -Id "Grpc.Tools" -Version "1.15.0"
 $ProtoApp = "$GrpcTools\tools\windows_x64\protoc.exe"
 $GrpcPluginApp = "$GrpcTools\tools\windows_x64\grpc_csharp_plugin.exe"
 
