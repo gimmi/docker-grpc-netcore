@@ -10,6 +10,7 @@ dotnet publish .\src\MyCompany.MyStack.sln --configuration Release
 ```
 dotnet .\src\MyCompany.MyStack.ServerApp\bin\Release\netcoreapp2.1\publish\MyCompany.MyStack.ServerApp.dll p1 p2 p3
 dotnet .\src\MyCompany.MyStack.ClientApp\bin\Release\netcoreapp2.1\publish\MyCompany.MyStack.ClientApp.dll p1 p2 p3
+dotnet .\src\MyCompany.MyStack.MyRestApp\bin\Release\netcoreapp2.1\publish\MyCompany.MyStack.MyRestApp.dll
 ```
 
 ### Build Docker Image
@@ -17,6 +18,7 @@ dotnet .\src\MyCompany.MyStack.ClientApp\bin\Release\netcoreapp2.1\publish\MyCom
 ```
 docker build --tag serverapp.mystack.mycompany .\src\MyCompany.MyStack.ServerApp
 docker build --tag clientapp.mystack.mycompany .\src\MyCompany.MyStack.ClientApp
+docker build --tag myrestapp.mystack.mycompany .\src\MyCompany.MyStack.MyRestApp
 ```
 
 ### Run Container in background
@@ -30,13 +32,17 @@ docker stop serverapp.mystack.mycompany
 docker logs --tail 20 serverapp.mystack.mycompany
 docker container rm serverapp.mystack.mycompany
 
-docker run --name clientapp.mystack.mycompany  --network=mystack.mycompany --detach clientapp.mystack.mycompany par1 par2 "par 3"
+docker run --name clientapp.mystack.mycompany --network=mystack.mycompany --detach clientapp.mystack.mycompany par1 par2 "par 3"
 docker logs --follow clientapp.mystack.mycompany
 docker stop clientapp.mystack.mycompany
 docker logs --tail 20 clientapp.mystack.mycompany
 docker container rm clientapp.mystack.mycompany
 
 docker network rm mystack.mycompany
+
+docker run --name myrestapp.mystack.mycompany --publish 5000:5000 myrestapp.mystack.mycompany
+docker stop myrestapp.mystack.mycompany
+docker container rm myrestapp.mystack.mycompany
 ```
 
 ### Remove image
