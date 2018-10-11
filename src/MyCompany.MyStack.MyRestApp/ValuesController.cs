@@ -34,7 +34,8 @@ namespace MyCompany.MyStack.MyRestApp
                     ["camelCaseKey"] = "value"
                 },
                 array = new[]{ "value1", "value2" },
-                dateTimeValue = new DateTime(2018, 5, 11, 8, 20, 31, 123)
+                utcDateTime = new DateTime(2018, 5, 11, 8, 20, 31, 123, DateTimeKind.Utc),
+                localDateTime = new DateTime(2018, 5, 11, 8, 20, 31, 123, DateTimeKind.Local),
             };
         }
     }

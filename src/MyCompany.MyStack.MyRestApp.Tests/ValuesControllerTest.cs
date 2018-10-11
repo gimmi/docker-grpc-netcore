@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.TestHost;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -32,14 +34,12 @@ namespace MyCompany.MyStack.MyRestApp.Tests
                 pascalCaseProperty: 'value',
                 camelCaseProperty: 'value',
                 dictionary: {
-                    PascalCaseKey: 'value2',
+                    PascalCaseKey: 'value',
                     camelCaseKey: 'value'
                 },
-                array: [
-                    'value1',
-                    'value2'
-                ],
-                dateTimeValue: '2018-05-11T08:20:31.123'
+                array: [ 'value1', 'value2' ],
+                utcDateTime: '2018-05-11T08:20:31.123Z',
+                localDateTime: '2018-05-11T08:20:31.123'
             }"));
         }
     }
