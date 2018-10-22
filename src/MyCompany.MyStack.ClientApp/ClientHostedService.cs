@@ -89,10 +89,9 @@ namespace MyCompany.MyStack.ClientApp
                         {
                             var response = responseStream.ResponseStream.Current;
                             var payloadSizeKb = response.Payload.Length / 1024;
-                            var elapsedTicks = Stopwatch.GetTimestamp() - response.Timestamp;
-                            var elapsedMs = (double)elapsedTicks / (Stopwatch.Frequency / 1000);
+                            var elapsed = TimeSpan.FromTicks(Stopwatch.GetTimestamp() - response.Timestamp);
 
-                            await Console.Out.WriteLineAsync($"=> {payloadSizeKb} KB {elapsedMs} ms");
+                            await Console.Out.WriteLineAsync($"=> {payloadSizeKb} KB in {elapsed.TotalMilliseconds}");
                         }
                         _logger.LogInformation("No more data from server");
                     }
@@ -116,14 +115,12 @@ namespace MyCompany.MyStack.ClientApp
                         var resp = conn.ResponseStream.Current;
 
                         await Console.Out.WriteLineAsync(resp.Message);
-
-                        if (!cancellationToken.IsCancellationRequested)
-                        {
-                            await conn.RequestStream.WriteAsync(new BidiStreamRequest());
-                        }
                     }
 
                     await conn.RequestStream.CompleteAsync();
+                    
+                    // See https://github.com/grpc/grpc/issues/8277#issuecomment-276501032
+                    while (await conn.ResponseStream.MoveNext(CancellationToken.None));
                 }
             }
             catch (OperationCanceledException ex)

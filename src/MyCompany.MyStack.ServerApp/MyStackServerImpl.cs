@@ -33,6 +33,7 @@ namespace MyCompany.MyStack.ServerApp
         public override async Task ServerStream(ServerStreamRequest request, IServerStreamWriter<ServerStreamResponse> responseStream, ServerCallContext context)
         {
             var responseDelay = TimeSpan.FromMilliseconds(10);
+            var payloadSizeBytes = 3 * 1024;
 
             _logger.LogInformation("=> ServerStream({})", request.Message);
             while (!context.CancellationToken.IsCancellationRequested)
@@ -43,7 +44,7 @@ namespace MyCompany.MyStack.ServerApp
 
                     await responseStream.WriteAsync(new ServerStreamResponse {
                         Message = $"Message #{ticks}",
-                        Payload = ByteString.CopyFrom(new byte[3 * 1024]),
+                        Payload = ByteString.CopyFrom(new byte[payloadSizeBytes]),
                         Timestamp = ticks
                     });
 
