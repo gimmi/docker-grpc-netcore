@@ -41,7 +41,8 @@ namespace MyCompany.MyStack.ServerApp
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Service stopped");
-            await _server.ShutdownAsync();
+            //await _server.ShutdownAsync();
+            await _server.KillAsync();
         }
     }
 }

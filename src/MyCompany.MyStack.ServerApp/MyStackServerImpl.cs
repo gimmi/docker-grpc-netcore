@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Grpc.Core;
@@ -30,17 +32,50 @@ namespace MyCompany.MyStack.ServerApp
 
         public override async Task ServerStream(ServerStreamRequest request, IServerStreamWriter<ServerStreamResponse> responseStream, ServerCallContext context)
         {
+            var responseDelay = TimeSpan.FromMilliseconds(10);
+
             _logger.LogInformation("=> ServerStream({})", request.Message);
-
-            for (int i = 0; i < 1000; i++)
+            while (!context.CancellationToken.IsCancellationRequested)
             {
-                var message = new ServerStreamResponse { Message = "response #" + i, Payload = ByteString.CopyFrom(new byte[3 * 1024 * 1024]) };
+                try
+                {
+                    var ticks = Stopwatch.GetTimestamp();
 
-                _logger.LogInformation("Sending {}", message.Message);
+                    await responseStream.WriteAsync(new ServerStreamResponse {
+                        Message = $"Message #{ticks}",
+                        Payload = ByteString.CopyFrom(new byte[3 * 1024]),
+                        Timestamp = ticks
+                    });
 
-                await responseStream.WriteAsync(message);
+                    var elapsedTicks = Stopwatch.GetTimestamp() - ticks;
+                    var elapsed = elapsedTicks > 0 ? TimeSpan.FromTicks(elapsedTicks) : TimeSpan.Zero;
+                    if (responseDelay > elapsed)
+                    {
+                        await Task.Delay(responseDelay.Subtract(elapsed), context.CancellationToken);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Unexpected error");
+                }
+            }
+        }
 
-                await Task.Delay(10);
+        public override async Task BidiStream(IAsyncStreamReader<BidiStreamRequest> requestStream, IServerStreamWriter<BidiStreamResponse> responseStream, ServerCallContext context)
+        {
+            BidiStreamRequest request = null;
+            int i = 0;
+            while (await requestStream.MoveNext(context.CancellationToken))
+            {
+                if (request == null)
+                {
+                    request = requestStream.Current;
+                    _logger.LogInformation("Start of the subscription");
+                }
+                await responseStream.WriteAsync(new BidiStreamResponse {
+                    Message = $"response #{++i}",
+                    Payload = ByteString.CopyFrom(new byte[3 * 1024])
+                });
             }
         }
     }

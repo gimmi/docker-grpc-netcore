@@ -6,6 +6,7 @@ service MyStackServer {
     rpc Echo(EchoRequest) returns (EchoResponse);
     rpc Fail(FailRequest) returns (FailResponse);
     rpc ServerStream(ServerStreamRequest) returns (stream ServerStreamResponse);
+    rpc BidiStream(stream BidiStreamRequest) returns (stream BidiStreamResponse);
 }
 
 message EchoRequest {
@@ -29,6 +30,16 @@ message ServerStreamRequest {
 }
 
 message ServerStreamResponse {
+    string message = 1;
+    bytes payload = 2;
+    int64 timestamp = 3;
+}
+
+message BidiStreamRequest {
+    string message = 1;
+}
+
+message BidiStreamResponse {
     string message = 1;
     bytes payload = 2;
 }
