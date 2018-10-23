@@ -105,44 +105,53 @@ namespace MyCompany.MyStack.ClientApp
 
         private async Task NotificationWorkerAsync(CancellationToken cancellationToken)
         {
-            try
+            while(!cancellationToken.IsCancellationRequested)
             {
-                using (var chan = _myStackServerClient.NotificationChannel())
+                try
                 {
-                    var receiverTask = Task.Run(async () => {
-                        while (await chan.ResponseStream.MoveNext(CancellationToken.None))
+                    using (var chan = _myStackServerClient.NotificationChannel())
+                    {
+                        await chan.RequestStream.WriteAsync(new SubscriptionRequest { Topic = "my-tag" });
+
+                        var consumerTask = NotificationConsumerAsync(chan.ResponseStream);
+                        var cancelTask = Task.Delay(Timeout.Infinite, cancellationToken);
+                        await Task.WhenAny(consumerTask, cancelTask);
+
+                        if (cancellationToken.IsCancellationRequested)
                         {
-                            var response = chan.ResponseStream.Current;
-                            var timeSpan = TimeSpan.FromTicks(Stopwatch.GetTimestamp() - response.Timestamp);
-                            await Console.Out.WriteLineAsync($"=> {response.Payload.Length / 1024} KB in {timeSpan}");
+                            // See https://github.com/grpc/grpc/issues/8277#issuecomment-276501032
+                            await chan.RequestStream.CompleteAsync();
                         }
-                    });
-
-                    await chan.RequestStream.WriteAsync(new SubscriptionRequest { Topic = "my-tag" });
-
-                    await DelayUntilCancellationAsync(cancellationToken);
-
-                    // See https://github.com/grpc/grpc/issues/8277#issuecomment-276501032
-                    await chan.RequestStream.CompleteAsync();
-                    await receiverTask;
+                        await consumerTask;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Unexpected error");
                 }
             }
-            catch (Exception ex)
+        }
+
+        private async Task NotificationConsumerAsync(IAsyncStreamReader<SubscriptionResponse> responseStream)
+        {
+            while (await responseStream.MoveNext(CancellationToken.None))
             {
-                _logger.LogError(ex, "Unexpected error");
+                var response = responseStream.Current;
+                var timeSpan = TimeSpan.FromTicks(Stopwatch.GetTimestamp() - response.Timestamp);
+                await Console.Out.WriteLineAsync($"=> {response.Payload.Length / 1024} KB in {timeSpan}");
             }
         }
 
-        private static async Task DelayUntilCancellationAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                await Task.Delay(-1, cancellationToken);
-            }
-            catch (OperationCanceledException)
-            {
-                // Task.Delay throw exception on cancel
-            }
-        }
+        //private async Task DelayUntilCancellationAsync(CancellationToken cancellationToken)
+        //{
+        //    try
+        //    {
+        //        await Task.Delay(Timeout.Infinite, cancellationToken);
+        //    }
+        //    catch (OperationCanceledException)
+        //    {
+        //        // Task.Delay throw exception on cancel
+        //    }
+        //}
     }
 }
