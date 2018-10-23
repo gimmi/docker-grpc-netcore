@@ -21,8 +21,10 @@ namespace MyCompany.MyStack.ServerApp
                     logging.AddConsole();
                 })
                 .ConfigureServices(services => {
+                    services.AddSingleton<EventSource>();
                     services.AddSingleton<MyStackServerImpl>();
                     services.AddSingleton<IHostedService, GrpcHostedService>();
+                    services.AddSingleton<IHostedService, EventSourceHostedService>();
                 });
 
             await hostBuilder.RunConsoleAsync();

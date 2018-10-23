@@ -11,11 +11,15 @@ namespace MyCompany.MyStack.ServerApp
 {
     public class MyStackServerImpl : MyStackServer.MyStackServerBase
     {
-        private readonly ILogger<MyStackServerImpl> _logger;
+        private readonly ByteString Payload = ByteString.CopyFrom(new byte[3 * 1024]);
 
-        public MyStackServerImpl(ILogger<MyStackServerImpl> logger)
+        private readonly ILogger<MyStackServerImpl> _logger;
+        private readonly EventSource _eventSource;
+
+        public MyStackServerImpl(ILogger<MyStackServerImpl> logger, EventSource eventSource)
         {
             _logger = logger;
+            _eventSource = eventSource;
         }
 
         public override Task<EchoResponse> Echo(EchoRequest request, ServerCallContext context)
@@ -32,8 +36,7 @@ namespace MyCompany.MyStack.ServerApp
 
         public override async Task ServerStream(ServerStreamRequest request, IServerStreamWriter<ServerStreamResponse> responseStream, ServerCallContext context)
         {
-            var responseDelay = TimeSpan.FromMilliseconds(10);
-            var payloadSizeBytes = 3 * 1024;
+            var responseDelay = TimeSpan.FromMilliseconds(100);
 
             _logger.LogInformation("=> ServerStream({})", request.Message);
             while (!context.CancellationToken.IsCancellationRequested)
@@ -44,7 +47,7 @@ namespace MyCompany.MyStack.ServerApp
 
                     await responseStream.WriteAsync(new ServerStreamResponse {
                         Message = $"Message #{ticks}",
-                        Payload = ByteString.CopyFrom(new byte[payloadSizeBytes]),
+                        Payload = Payload,
                         Timestamp = ticks
                     });
 
@@ -62,20 +65,28 @@ namespace MyCompany.MyStack.ServerApp
             }
         }
 
-        public override async Task BidiStream(IAsyncStreamReader<BidiStreamRequest> requestStream, IServerStreamWriter<BidiStreamResponse> responseStream, ServerCallContext context)
+        public override async Task NotificationChannel(IAsyncStreamReader<SubscriptionRequest> requestStream, IServerStreamWriter<SubscriptionResponse> responseStream, ServerCallContext context)
         {
-            BidiStreamRequest request = null;
-            int i = 0;
-            while (await requestStream.MoveNext(context.CancellationToken))
+            _logger.LogInformation("Client connected");
+
+            while (await requestStream.MoveNext(CancellationToken.None))
             {
-                if (request == null)
-                {
-                    request = requestStream.Current;
-                    _logger.LogInformation("Start of the subscription");
-                }
-                await responseStream.WriteAsync(new BidiStreamResponse {
-                    Message = $"response #{++i}",
-                    Payload = ByteString.CopyFrom(new byte[3 * 1024])
+                var request = requestStream.Current;
+                _logger.LogInformation("Subscribing to {}", request.Topic);
+
+                _eventSource.EventPublished += OnEventPublished;
+            }
+
+            _logger.LogInformation("Client disconnected");
+            _eventSource.EventPublished -= OnEventPublished;
+
+            async void OnEventPublished(object s, EventArgs e)
+            {
+                _logger.LogInformation("Publishing");
+                await responseStream.WriteAsync(new SubscriptionResponse {
+                    Topic = "my-topic",
+                    Payload = Payload,
+                    Timestamp = Stopwatch.GetTimestamp()
                 });
             }
         }

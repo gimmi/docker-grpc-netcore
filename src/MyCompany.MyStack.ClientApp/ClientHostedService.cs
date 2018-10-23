@@ -30,8 +30,8 @@ namespace MyCompany.MyStack.ClientApp
 
             _tasks = new[] {
                 //Task.Run(() => WorkerAsync(_stopTokenSrc.Token), cancellationToken),
-                Task.Run(() => ServerStreamWorkerAsync(_stopTokenSrc.Token), cancellationToken),
-                //Task.Run(() => BidiStreamWorkerAsync(_stopTokenSrc.Token), cancellationToken),
+                //Task.Run(() => ServerStreamWorkerAsync(_stopTokenSrc.Token), cancellationToken),
+                Task.Run(() => NotificationWorkerAsync(_stopTokenSrc.Token), cancellationToken),
             };
 
             return Task.CompletedTask;
@@ -103,41 +103,41 @@ namespace MyCompany.MyStack.ClientApp
             }
         }
 
-        private async Task BidiStreamWorkerAsync(CancellationToken cancellationToken)
+        private async Task NotificationWorkerAsync(CancellationToken cancellationToken)
         {
             try
             {
-                using (var conn = _myStackServerClient.BidiStream())
+                using (var chan = _myStackServerClient.NotificationChannel())
                 {
-                    await conn.RequestStream.WriteAsync(new BidiStreamRequest { Message = "" });
-                    while (await conn.ResponseStream.MoveNext(cancellationToken))
-                    {
-                        var resp = conn.ResponseStream.Current;
+                    var receiverTask = Task.Run(async () => {
+                        while (await chan.ResponseStream.MoveNext(CancellationToken.None))
+                        {
+                            var response = chan.ResponseStream.Current;
+                            var timeSpan = TimeSpan.FromTicks(Stopwatch.GetTimestamp() - response.Timestamp);
+                            await Console.Out.WriteLineAsync($"=> {response.Payload.Length / 1024} KB in {timeSpan}");
+                        }
+                    });
 
-                        await Console.Out.WriteLineAsync(resp.Message);
-                    }
+                    await chan.RequestStream.WriteAsync(new SubscriptionRequest { Topic = "my-tag" });
 
-                    await conn.RequestStream.CompleteAsync();
-                    
+                    await DelayUntilCancellationAsync(cancellationToken);
+
                     // See https://github.com/grpc/grpc/issues/8277#issuecomment-276501032
-                    while (await conn.ResponseStream.MoveNext(CancellationToken.None));
+                    await chan.RequestStream.CompleteAsync();
+                    await receiverTask;
                 }
             }
-            catch (OperationCanceledException ex)
+            catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Client shutdown");
-            }
-            catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
-            {
-                _logger.LogWarning(ex, "Server shutdown");
+                _logger.LogError(ex, "Unexpected error");
             }
         }
 
-        private static async Task WaitAsync(TimeSpan delay, CancellationToken cancellationToken)
+        private static async Task DelayUntilCancellationAsync(CancellationToken cancellationToken)
         {
             try
             {
-                await Task.Delay(delay, cancellationToken);
+                await Task.Delay(-1, cancellationToken);
             }
             catch (OperationCanceledException)
             {
