@@ -10,13 +10,13 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\protos\MycompanyMystack.cs">
-      <Link>MycompanyMystack.cs</Link>
-    </Compile>
-    <Compile Include="..\..\protos\MycompanyMystackGrpc.cs">
-      <Link>MycompanyMystackGrpc.cs</Link>
-    </Compile>
+    <PackageReference Include="Grpc.Tools" Version="1.17.1">
+      <!-- See https://grpc.io/blog/grpc-dotnet-build -->
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <Protobuf Include="..\..\protos\mycompany_mystack.proto">
+      <Link>mycompany_mystack.proto</Link>
+    </Protobuf>
   </ItemGroup>
 </Project>
