@@ -11,7 +11,7 @@ namespace MyCompany.MyStack.ServerApp
     public class GrpcHostedService : IHostedService
     {
         private const string Host = "0.0.0.0";
-        private const int Port = 50052;
+        private const int Port = 40052;
 
         private readonly MyStackServerImpl _myStackServerImpl;
         private readonly ILogger<GrpcHostedService> _logger;
