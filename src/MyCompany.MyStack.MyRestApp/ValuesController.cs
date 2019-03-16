@@ -16,11 +16,21 @@ namespace MyCompany.MyStack.MyRestApp
             _fooService = fooService;
         }
 
+        [HttpGet("api/exception")]
+        public object GetException()
+        {
+            throw new ApplicationException("AHHH");
+        }
+
         [HttpGet("api/values")]
-        public object Get()
+        public object GetValues()
         {
             _fooService.LogSomething();
-            return _hostingEnvironment;
+            return new {
+                _hostingEnvironment.ApplicationName,
+                _hostingEnvironment.EnvironmentName,
+                _hostingEnvironment.ContentRootPath
+            };
         }
 
         [HttpGet("api/jsonserialization")]
