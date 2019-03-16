@@ -1,7 +1,6 @@
 ### Build App
 
 ```
-.\protos\generate.ps1
 dotnet publish .\src\MyCompany.MyStack.sln --configuration Release
 ```
 
@@ -26,28 +25,29 @@ docker build --tag myrestapp.mystack.mycompany .\src\MyCompany.MyStack.MyRestApp
 ```
 docker network create mystack.mycompany
 
-docker run --name serverapp.mystack.mycompany --publish 50052:50052 --network=mystack.mycompany --detach serverapp.mystack.mycompany par1 par2 "par 3"
-docker logs --follow serverapp.mystack.mycompany
-docker stop serverapp.mystack.mycompany
-docker logs --tail 20 serverapp.mystack.mycompany
-docker container rm serverapp.mystack.mycompany
+docker run -d --name serverapp --publish 50052:50052 --network=mystack.mycompany --detach serverapp.mystack.mycompany par1 par2 "par 3"
+docker logs --follow serverapp
+docker stop serverapp
+docker logs --tail 20 serverapp
+docker container rm serverapp
 
-docker run --name clientapp.mystack.mycompany --network=mystack.mycompany --detach clientapp.mystack.mycompany par1 par2 "par 3"
-docker logs --follow clientapp.mystack.mycompany
-docker stop clientapp.mystack.mycompany
-docker logs --tail 20 clientapp.mystack.mycompany
-docker container rm clientapp.mystack.mycompany
+docker run -d --name clientapp --network=mystack.mycompany --detach clientapp.mystack.mycompany par1 par2 "par 3"
+docker logs --follow clientapp
+docker stop clientapp
+docker logs --tail 20 clientapp
+docker container rm clientapp
 
 docker network rm mystack.mycompany
 
-docker run --name myrestapp.mystack.mycompany --publish 5000:5000 myrestapp.mystack.mycompany
-docker stop myrestapp.mystack.mycompany
-docker container rm myrestapp.mystack.mycompany
+docker run -d --name myrestapp --publish 5000:5000 myrestapp.mystack.mycompany
+docker stop myrestapp
+docker container rm myrestapp
 ```
 
 ### Remove image
 
 ```
-docker image rm serverapp.mystack.mycompany
-docker image rm clientapp.mystack.mycompany
+docker image rm serverapp
+docker image rm clientapp
+docker image rm myrestapp
 ```
