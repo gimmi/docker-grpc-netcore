@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace MyCompany.MyStack.MyRestApp
 {
@@ -42,25 +37,6 @@ namespace MyCompany.MyStack.MyRestApp
                 _hostingEnvironment.EnvironmentName,
                 _hostingEnvironment.ContentRootPath
             };
-        }
-
-        [HttpGet("api/v1/config")]
-        public async Task<ActionResult> GetConfigAsync([FromQuery(Name = "module-instance-id")] string moduleInstanceId)
-        {
-            if (string.IsNullOrWhiteSpace(moduleInstanceId))
-            {
-                return BadRequest(new { Error = "Missing required query parameter: module-instance-id" });
-            }
-            var cfgPath = Path.Combine(_appConfig.DataDir, moduleInstanceId + ".json");
-            if (System.IO.File.Exists(cfgPath))
-            {
-                var json = await System.IO.File.ReadAllTextAsync(cfgPath, Encoding.UTF8);
-                return Ok(JsonConvert.DeserializeObject(json));
-            }
-            else
-            {
-                return NotFound(new { Error = "No config found for " + moduleInstanceId });
-            }
         }
 
         [HttpGet("api/jsonserialization")]
