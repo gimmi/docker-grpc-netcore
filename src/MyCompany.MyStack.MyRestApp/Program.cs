@@ -5,21 +5,24 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MyCompany.MyStack.MyRestApp
 {
     public class Program
     {
-        public static async Task Main()
+        public static async Task Main(string[] args)
         {
-            var hostBuilder = CreateHostBuilder();
+            var hostBuilder = CreateHostBuilder(new AppConfig {
+                DataDir = args.FirstOrDefault() ?? Directory.GetCurrentDirectory()
+            });
 
             await hostBuilder.Build()
                 .RunAsync();
         }
 
-        public static IWebHostBuilder CreateHostBuilder()
+        public static IWebHostBuilder CreateHostBuilder(AppConfig appConfig)
         {
             // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host
             // The Generic Host is new in ASP.NET Core 2.1 and isn't suitable for web hosting scenarios. For web hosting scenarios, use the Web Host.
@@ -47,6 +50,7 @@ namespace MyCompany.MyStack.MyRestApp
                                 }
                             };
                         });
+                    services.AddSingleton(appConfig);
                     services.AddScoped<IFooService, FooService>();
                 })
                 .Configure(app => {

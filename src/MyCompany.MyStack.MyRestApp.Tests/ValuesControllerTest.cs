@@ -8,15 +8,25 @@ namespace MyCompany.MyStack.MyRestApp.Tests
 {
     public class ValuesControllerTest
     {
+        private TestUtils _tu;
         private TestServer _server;
         private HttpClient _client;
 
         [SetUp]
         public void SetUp()
         {
-            var webHostBuilder = Program.CreateHostBuilder();
+            _tu = new TestUtils();
+            var webHostBuilder = Program.CreateHostBuilder(new AppConfig {
+                DataDir = _tu.TestDir
+            });
             _server = new TestServer(webHostBuilder);
             _client = _server.CreateClient();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _tu.Dispose();
         }
 
         [Test]
