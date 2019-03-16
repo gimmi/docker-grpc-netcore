@@ -55,11 +55,11 @@ namespace MyCompany.MyStack.MyRestApp
             if (System.IO.File.Exists(cfgPath))
             {
                 var json = await System.IO.File.ReadAllTextAsync(cfgPath, Encoding.UTF8);
-                return Json(JsonConvert.DeserializeObject<JObject>(json));
+                return Ok(JsonConvert.DeserializeObject(json));
             }
             else
             {
-                return Json(new object());
+                return NotFound(new { Error = "No config found for " + moduleInstanceId });
             }
         }
 
