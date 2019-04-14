@@ -15,9 +15,9 @@ dotnet .\src\MyCompany.MyStack.MyRestApp\bin\Release\netcoreapp2.1\publish\MyCom
 ### Build Docker Image
 
 ```
-docker build --tag serverapp.mystack.mycompany .\src\MyCompany.MyStack.ServerApp
-docker build --tag clientapp.mystack.mycompany .\src\MyCompany.MyStack.ClientApp
-docker build --tag myrestapp.mystack.mycompany .\src\MyCompany.MyStack.MyRestApp
+docker build --tag serverapp.mystack.mycompany --pull --file .\src\MyCompany.MyStack.ServerApp\Dockerfile .
+docker build --tag clientapp.mystack.mycompany --pull --file .\src\MyCompany.MyStack.ClientApp\Dockerfile .
+docker build --tag myrestapp.mystack.mycompany --pull --file .\src\MyCompany.MyStack.MyRestApp\Dockerfile .
 ```
 
 ### Run Container in background
