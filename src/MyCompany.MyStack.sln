@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCompany.MyStack.MyRestApp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCompany.MyStack.SampleGrpcSssl", "MyCompany.MyStack.SampleGrpcSsl\MyCompany.MyStack.SampleGrpcSssl.csproj", "{E7A9A110-2108-49D7-8EE7-4A12628654A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCompany.MyStack.ClientWorkerApp", "MyCompany.MyStack.ClientWorkerApp\MyCompany.MyStack.ClientWorkerApp.csproj", "{52ACF435-D8C6-4934-951D-3F021B2E1E1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{E7A9A110-2108-49D7-8EE7-4A12628654A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7A9A110-2108-49D7-8EE7-4A12628654A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7A9A110-2108-49D7-8EE7-4A12628654A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52ACF435-D8C6-4934-951D-3F021B2E1E1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52ACF435-D8C6-4934-951D-3F021B2E1E1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52ACF435-D8C6-4934-951D-3F021B2E1E1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52ACF435-D8C6-4934-951D-3F021B2E1E1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

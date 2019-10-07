@@ -1,0 +1,8 @@
+﻿{
+  "profiles": {
+    "MyCompany.MyStack.ClientWorkerApp": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  }
+}
